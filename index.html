@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>통장에 1억이 찍혔다.- 모의 주식 투자 시뮬레이션 수업 설계 가이드</title>
+  <!-- Pretendard Font (Modern Korean Font) -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+  <style>
+    :root {
+      --primary: #1E3A8A; /* Deep Blue */
+      --primary-light: #3B82F6; /* Bright Blue */
+      --secondary: #10B981; /* Emerald Green */
+      --bg-color: #F3F4F6;
+      --surface: #FFFFFF;
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+      --accent-bg: #EFF6FF;
+      --rubric-bg: #F8FAFC;
+      --standard-bg: #F0FDF4;
+      --seteuk-border: #6366F1;
+      --seteuk-bg: #EEF2FF;
+      --curriculum-border: #E2E8F0;
+      --step-color: #0369A1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+      flex-direction: row;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 300px;
+      background-color: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 2.5rem 1.2rem;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .sidebar-header {
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.4;
+      margin-bottom: 0.5rem;
+      word-break: keep-all;
+    }
+    
+    .sidebar-header h1 .sub-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 8px;
+    }
+
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.2rem;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background-color: var(--accent-bg);
+      color: var(--primary-light);
+    }
+
+    .nav-link.active {
+      background-color: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+    }
+    
+    .nav-divider {
+      height: 1px;
+      background-color: var(--border);
+      margin: 1rem 0;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      margin-left: 300px;
+      padding: 3rem 4rem;
+      max-width: 1200px;
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    /* Curriculum Framework Styles */
+    .curr-framework {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      border: 1px solid var(--curriculum-border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .curr-header {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--accent-bg);
+      padding-bottom: 0.8rem;
+    }
+
+    .curr-core-idea {
+      background-color: var(--accent-bg);
+      padding: 1.2rem 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+      color: var(--primary);
+      font-weight: 600;
+      line-height: 1.5;
+      border-left: 4px solid var(--primary-light);
+    }
+
+    .curr-elements {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .curr-col h4 {
+      font-size: 1.1rem;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      display: inline-block;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--secondary);
+    }
+
+    .curr-col ul {
+      list-style-type: disc;
+      padding-left: 1.2rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    
+    .curr-col ul li {
+      margin-bottom: 8px;
+    }
+
+    .curr-questions {
+      background-color: #FEF3C7;
+      border: 1px solid #FDE68A;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .curr-questions h4 {
+      color: #B45309;
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .curr-questions ol {
+      padding-left: 1.5rem;
+      color: #92400E;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+    
+    .curr-questions ol li {
+      margin-bottom: 8px;
+    }
+
+    .curr-standards {
+      background-color: var(--standard-bg);
+      border: 1px solid #BBF7D0;
+      padding: 1.5rem;
+      border-radius: 8px;
+    }
+    
+    .curr-standards h4 {
+      color: #047857;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .curr-standards ul {
+      list-style: none;
+    }
+    
+    .curr-standards li {
+      position: relative;
+      padding-left: 1.8rem;
+      margin-bottom: 0.8rem;
+      color: #166534;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    .curr-standards li::before {
+      content: '🎯';
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    /* Card Layouts */
+    .card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      border: 1px solid var(--border);
+    }
+
+    .card h3 {
+      font-size: 1.5rem;
+      color: var(--primary-light);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card h3::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 24px;
+      background-color: var(--secondary);
+      border-radius: 2px;
+    }
+
+    /* Performance Assessment Specific Styles */
+    .eval-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .eval-box {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--primary);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    .eval-title {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 1.3rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .eval-standards-box {
+      background-color: var(--accent-bg);
+      border-left: 4px solid var(--primary-light);
+      padding: 1.5rem;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+    
+    .eval-standards-box p {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+    .eval-standards-box p:last-child {
+      margin-bottom: 0;
+    }
+    .eval-standards-box strong {
+      color: var(--primary);
+      display: inline-block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+    .eval-standards-box .std-text {
+      display: block;
+      margin-top: 4px;
+      padding-left: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background-color: var(--standard-bg);
+      color: #166534;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 20px;
+      margin-right: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #BBF7D0;
+    }
+
+    /* Step-by-Step Execution Styles (NEWLY ENHANCED) */
+    .eval-notice {
+      background-color: #F8FAFC;
+      border: 1px dashed #94A3B8;
+      color: #475569;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .step-item {
+      background-color: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .step-header {
+      font-weight: 800;
+      color: var(--step-color);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #F1F5F9;
+      padding-bottom: 0.8rem;
+    }
+
+    .step-actor {
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: flex-start;
+      line-height: 1.6;
+    }
+    
+    .step-actor:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-actor .icon-label {
+      font-weight: 700;
+      min-width: 95px;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+
+    .step-actor.student .icon-label { color: #2563EB; } /* Blue for Student */
+    .step-actor.teacher .icon-label { color: #059669; } /* Green for Teacher */
+    .step-actor.teacher { background-color: #F0FDF4; padding: 0.8rem; border-radius: 6px; margin-top: 10px;}
+
+    /* Se-teuk Box */
+    .seteuk-box {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background-color: var(--seteuk-bg);
+      border-radius: 8px;
+      border-left: 4px solid var(--seteuk-border);
+    }
+    
+    .seteuk-title {
+      font-weight: 800;
+      color: var(--seteuk-border);
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .seteuk-content {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      text-align: justify;
+      line-height: 1.6;
+    }
+
+    /* Guide Specific Styles */
+    .guide-alert {
+      background-color: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-left: 4px solid #F59E0B;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .guide-alert h4 {
+      color: #D97706;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .guide-point {
+      background-color: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      border-left: 4px solid #10B981;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .guide-point h4 {
+      color: #047857;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 3rem;
+      background-color: var(--surface);
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.02);
+    }
+    
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .footer-info {
+      background-color: var(--accent-bg);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-top: 2rem;
+      border: 1px solid #DBEAFE;
+    }
+    
+    .footer-info p {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-info p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 1.5rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+      }
+      .nav-link {
+        white-space: nowrap;
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 2rem 1.5rem;
+      }
+      .section-title {
+        font-size: 1.8rem;
+      }
+      .curr-elements {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>통장에 1억이 찍혔다.<span class="sub-title">모의 주식 투자 시뮬레이션<br>수업 설계 가이드</span></h1>
+    </div>
+    <nav class="nav-menu">
+      <a href="#" class="nav-link active" onclick="showSection('guide'); return false;">🌟 교사 활용 가이드</a>
+      <div class="nav-divider"></div>
+      <a href="#" class="nav-link" onclick="showSection('integrated'); return false;">🏫 통합사회 1·2 (공통)</a>
+      <a href="#" class="nav-link" onclick="showSection('economics'); return false;">📊 경제 (선택)</a>
+      <a href="#" class="nav-link" onclick="showSection('finance'); return false;">💰 금융과 경제생활 (선택)</a>
+      <a href="#" class="nav-link" onclick="showSection('geography'); return false;">🌍 세계시민과 지리 (선택)</a>
+      <a href="#" class="nav-link" onclick="showSection('social'); return false;">🔍 사회문제 탐구 (선택)</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- 교사 활용 가이드 Section -->
+    <section id="guide" class="section active">
+      <h2 class="section-title">🌟 교사 활용 가이드 및 주의사항</h2>
+      
+      <div class="card">
+        <h3>1. 모의 시뮬레이션의 한계와 활용 방법 (사전 학습 모델)</h3>
+        <p>본 앱은 학생들의 이해를 돕기 위해 거시 경제 지표(물가, 금리 등)와 자산 가격 간의 인과관계를 단순화하여 설계된 <strong>'모의 가상 시뮬레이션'</strong>입니다. 현실의 경제는 게임 내 로직보다 훨씬 다변적이고 복잡한 외부 요인(정치, 심리, 글로벌 패권 등)의 영향을 받습니다.</p>
+        
+        <div class="guide-alert">
+          <h4>⚠️ 활용 주의사항 및 권장 수업 모델</h4>
+          <p><strong>앱 플레이는 반드시 '사전 학습(개념의 직관적 이해)' 단계로 한정</strong>하시길 권장합니다. 앱은 <strong>단기 체험용 4라운드</strong>와 <strong>정규 체험용 12라운드</strong>로 구성되어 있습니다. 앱을 통해 '금리가 오르면 주식이 떨어질 확률이 높다'는 식의 뼈대를 체험한 후, <strong>[심화 탐구] 단계에서 실제 경제/역사적 사례(예: 2008년 금융위기, 2022년 글로벌 인플레이션 사태 등)를 학생들이 직접 찾아 비교·대조</strong>하는 사후 활동이 결합되어야 온전한 교육적 가치가 달성됩니다.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2. 수행평가 적용 시 바람직한 평가 방향</h3>
+        <p>주식 투자 등 모의 시뮬레이션 앱을 수행평가에 반영할 때 교사들이 흔히 범하기 쉬운 오류가 '수익률 중심의 줄세우기 평가'입니다.</p>
+
+        <div class="guide-point">
+          <h4>✅ 평가의 핵심: "결과(수익금)"가 아닌 "과정(논리적 성찰)"</h4>
+          <ul style="margin-bottom:0; padding-top:10px; list-style-type: none; padding-left: 0;">
+            <li style="margin-bottom: 8px;"><strong>[지양점]</strong> 수익률 1등에게 만점을 주는 방식은 절대 피해야 합니다. 이는 학생들에게 결과주의적 태도와 무분별한 투기 심리를 조장할 수 있습니다.</li>
+            <li style="margin-bottom: 8px;"><strong>[권장점]</strong> 최고점 부여 기준: 비록 포트폴리오 수익률이 마이너스가 났더라도, <strong>"내가 왜 손실을 보았는지(예: 예기치 못한 원자재 폭등 시그널을 무시함, 분산 투자를 하지 않음)"를 거시경제적/행동경제학적 관점에서 철저하게 분석하고 논리적으로 성찰</strong>한 학생에게 가장 높은 점수를 부여해야 합니다.</li>
+            <li><strong>[포커스]</strong> 평가의 초점은 <strong>'의사결정 과정의 논리성', '경제 지표 데이터의 분석력', '실패를 통한 개념적 메타인지'</strong>에 맞춰져야 합니다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 통합사회 1, 2 Section -->
+    <section id="integrated" class="section">
+      <h2 class="section-title">🏫 통합사회 1·2 (공통과목)</h2>
+      
+      <!-- Curriculum Framework -->
+      <div class="curr-framework">
+        <div class="curr-header">🎯 교육과정 핵심 구조 (시장 경제와 금융 중심)</div>
+        <div class="curr-core-idea">
+          [핵심 아이디어] 자본주의 시장 경제는 합리적 선택을 바탕으로 작동하지만 시장 실패가 발생할 수 있으며, 지속가능한 삶을 위해 생애 주기를 고려한 금융 설계가 필요하다.
+        </div>
+        
+        <div class="curr-elements">
+          <div class="curr-col">
+            <h4>🧠 지식·이해</h4>
+            <ul>
+              <li>자본주의의 역사적 전개 과정</li>
+              <li>합리적 선택의 의미와 한계</li>
+              <li>시장 실패 원인과 정부·시민의 역할</li>
+              <li>금융 자산의 특징과 생애 주기 자산 관리</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>⚙️ 과정·기능</h4>
+            <ul>
+              <li>투자 대안의 기회비용 계산하기</li>
+              <li>시장 실패를 보완하는 정책 사례 분석하기</li>
+              <li>생애 주기에 따른 맞춤형 포트폴리오 기획하기</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>❤️ 가치·태도</h4>
+            <ul>
+              <li>책임감 있는 경제적 의사 결정 태도</li>
+              <li>경제적 불평등 완화에 공감하는 태도</li>
+              <li>미래 불확실성에 대비하는 성찰적 자세</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="curr-questions">
+          <h4>💡 관련 탐구 질문 (Inquiry Questions)</h4>
+          <ol>
+            <li>이론적인 '완벽히 합리적인 선택'은 현실의 자본주의 시장에서 온전히 달성될 수 있을까?</li>
+            <li>물가가 급등하거나 실업이 넘쳐날 때 국가(정부, 중앙은행)는 어떻게 시장에 개입해야 할까?</li>
+            <li>인플레이션 시기에 화폐의 가치를 지키고, 평생 쓸 자금을 안전하게 관리하는 방법은 무엇일까?</li>
+          </ol>
+        </div>
+
+        <div class="curr-standards">
+          <h4>📖 관련 국가 성취기준 전문</h4>
+          <ul>
+            <li><strong>[10통사05-01]</strong> 자본주의의 역사적 전개 과정을 이해하고, 시장 경제에서 합리적 선택의 중요성과 한계를 파악한다.</li>
+            <li><strong>[10통사05-02]</strong> 시장의 한계(시장 실패)를 보완하기 위한 정부, 기업, 시민의 역할을 이해하고, 경제적 불평등을 완화하기 위한 방안을 탐구한다.</li>
+            <li><strong>[10통사05-03]</strong> 금융의 의미와 중요성을 이해하고, 생애 주기를 고려한 지속가능하고 합리적인 자산 관리 방안을 설계한다.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>💡 수업 아이디어 및 세특 예시</h3>
+        <p>복잡한 주식 분석보다는 '인플레이션 방어의 필요성', '정부 개입의 이유', '합리적 선택의 한계'를 직관적으로 체험하는 4단계 활동에 초점을 맞춥니다.</p>
+        
+        <p class="eval-notice">
+          💡 <strong>수업 활용 팁:</strong> 아래 제시된 단계별 <strong>'학생 수행'</strong>과 <strong>'교사 지도'</strong> 내용은 수업 설계를 돕기 위한 <strong>예시 가이드</strong>입니다. 학급의 성취 수준과 배정된 수업 시수에 맞게 단계와 내용을 유연하게 변형하여 활용하시기 바랍니다.
+        </p>
+
+        <div class="eval-container">
+          <!-- 아이디어 1 -->
+          <div class="eval-box">
+            <div class="eval-title">1. [체험 보고서형] "나는 왜 예금만 하면 안 되는가?" : 인플레이션과 생애 자산관리</div>
+            <div><span class="tag">합리적 선택</span><span class="tag">생애주기</span><span class="tag">자산관리</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [10통사05-03]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">인플레이션이 실질 자산 가치에 미치는 영향을 데이터로 분석하고, 생애 주기를 고려하여 안전성과 수익성을 조화시킨 합리적인 자산 관리 포트폴리오를 설계할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 사전 준비 및 개념 학습]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  물가 상승(인플레이션)과 화폐 가치 하락의 기본 개념을 이해하고, 모의 투자 활동을 위한 스마트 기기를 세팅한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들에게 '짜장면 가격의 과거와 현재' 등 친숙한 사례로 인플레이션을 5분간 브리핑하고, 앱의 단기 체험용 4라운드(또는 정규 12라운드) 모드 접속을 안내한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 조건부 시뮬레이션 플레이]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  자신에게 부여된 A그룹(예금 100% 유지) 또는 B그룹(채권, ETF 등 100% 분산 투자)의 조건에 맞게 매 라운드를 플레이한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들을 무작위 두 그룹으로 배정하고, A그룹이 주식 등 타 자산에 투자하지 못하도록, B그룹이 한 자산에 몰빵하지 않도록 순회하며 조건을 통제한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 수익률 데이터 추출]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  시뮬레이션 종료 후 결과 화면에 표시된 자신의 '명목 수익률'과 누적 물가가 반영된 '실질 수익률' 수치를 활동지에 정확히 기록한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  단순히 번 돈(명목)이 전부가 아니라, 물가가 오르면 실제 구매력(실질)이 마이너스가 될 수 있음을 A그룹(예금조)의 데이터를 띄워 학급 전체에 시각적으로 강조한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 사후 분석 및 논술 작성]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  A그룹(예금)과 B그룹(투자)의 결과를 비교하여, 맹목적 저축을 넘어 생애주기를 고려한 '자산 분산 관리'가 왜 필수적인지 500자 내외로 논술한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들의 논술 채점 시, '무조건 투자를 해야 한다'는 투기적 결론이 아닌, '수익성과 안전성을 고려한 합리적 배분'으로 결론을 도출했는지 루브릭에 따라 평가한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                가상 경제 시뮬레이션 활동에서 예금 집중형 그룹과 분산 투자형 그룹의 수익률을 비교 분석함. 특히 '명목 수익률'과 '실질 수익률'의 개념을 정확히 이해하고, 인플레이션율이 예금 금리를 상회할 경우 화폐의 구매력이 하락함을 데이터로 논증함. 이를 바탕으로 단순 저축을 넘어 생애 주기를 고려한 합리적인 자산 배분의 필요성을 설득력 있게 제시하는 등 금융 리터러시 역량이 돋보임.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 2 -->
+          <div class="eval-box">
+            <div class="eval-title">2. [이슈 분석형] 게임 속 '시장 실패'와 '정부의 개입' 추적하기</div>
+            <div><span class="tag">시장 실패</span><span class="tag">정부 역할</span><span class="tag">경제 정책</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [10통사05-02]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">가상 경제 시뮬레이션에서 발생하는 시장의 한계 현상을 파악하고, 이를 보완하기 위해 발동된 정책의 역할과 그 효과를 실제 역사적 사례와 비교 분석할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 시장의 한계 브레인스토밍]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  교과서에서 배운 시장 실패의 원인(외부효과, 공공재 부족 등)과 거시경제적 한계(경기 침체, 물가 급등) 개념을 마인드맵으로 정리한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  완전 경쟁 시장이 현실에서는 왜 작동하기 어려운지 간단히 질문을 던지며 개념을 환기하고, 정부 개입의 필요성으로 주제를 유도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 게임 내 정책 뉴스 스크랩]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  앱 정규 12라운드를 자유롭게 플레이하며, 화면에 팝업되는 '정부 정책 뉴스(예: 금리 대폭 인상, 대규모 경기 부양책 등)'를 2개 이상 캡처하거나 메모한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  해당 정책 뉴스가 떴을 때 당시의 물가와 실업률 수치가 어떠했는지(시장 실패 상황) 함께 메모하도록 구체적으로 지시한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 현실 경제 사례 탐구]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  자신이 스크랩한 가상의 정부 정책과 가장 유사했던 현실의 역사적 사례(예: 코로나19 시기의 양적완화)를 태블릿으로 검색하여 매칭한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들이 검색에 어려움을 겪을 경우, '2008년 금융위기', '2022년 글로벌 금리 인상기' 등 구체적인 검색 키워드를 칠판에 적어준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 정책 평가 인포그래픽 제작]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  정부 개입이 시장 안정화에 미친 긍정적 효과와, 역으로 발생한 인플레이션 등의 부작용(한계)을 비교하는 1페이지 인포그래픽 보고서를 제작한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  '정부의 개입은 항상 완벽하다'는 오개념을 가지지 않도록, 정부 개입 역시 부작용(정부 실패)을 낳을 수 있음을 인포그래픽에 포함했는지 평가한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                모의 투자 중 발생한 실업률 급등과 물가 상승 상황을 '시장 실패'의 관점에서 정확히 진단함. 이를 해결하기 위해 도입된 가상 정부의 경기 부양책과 중앙은행의 금리 정책의 파급 효과를 분석함. 특히, 사후 탐구 활동에서 코로나19 팬데믹 당시 각국 정부의 양적 완화 정책 사례를 직접 찾아 시뮬레이션 로직과 비교 대조하며, 정부 개입이 지니는 긍정적 역할과 인플레이션이라는 부작용(한계)을 균형감 있게 서술함.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 3 -->
+          <div class="eval-box">
+            <div class="eval-title">3. [토의형] 자본주의 시장 경제에서의 '합리적 의사결정' 딜레마</div>
+            <div><span class="tag">기회비용</span><span class="tag">정보 비대칭</span><span class="tag">합리적 선택</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [10통사05-01]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">모의 투자 과정에서 직면한 불확실성을 바탕으로, 실제 자본주의 시장 경제에서 합리적 선택이 지니는 중요성과 현실적인 한계(정보 부족)를 논증할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 결정적 순간 메모하기]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  앱(정규 12라운드)을 플레이하며, 매 라운드 투자를 결정할 때마다 '왜 이 자산을 샀는지/팔았는지' 그 핵심 이유를 활동지에 한 줄로 기록한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  수익률 경쟁에만 매몰되지 않도록, "결과보다 여러분이 그 순간 어떤 근거로 선택했는지를 평가할 것"이라며 과정 중심의 피드백을 강조한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 실패 사례 및 기회비용 도출]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  게임 종료 후 자신이 가장 후회하는 투자(실패 사례)를 하나 고르고, 당시 그 선택을 함으로써 포기해야 했던 대안의 가치(기회비용)를 수치화해 본다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들이 기회비용을 단순히 잃은 돈으로 착각하지 않도록, 명시적 비용과 암묵적 비용의 합이라는 교과 개념을 재차 교정해 준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 모둠별 실패 원인 토의]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  4인 1조로 모여 각자의 실패 원인(정보 부족, 가짜 뉴스 맹신, 패닉셀 등)을 공유하고, 시장에서 '완벽히 합리적인 경제인'이 될 수 없는 이유를 토의한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  순회 지도하며 '제한된 합리성', '정보의 비대칭성'과 같은 경제학적 개념이 학생들의 토론 언어로 등장할 수 있도록 자연스럽게 유도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 불확실성 극복 브리핑]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  모둠별 토의를 종합하여, 인간의 한계를 인정하고 현실 금융 시장의 불확실성에 대응하기 위한 나름의 방법론(예: 분산 투자 원칙 고수)을 3분 브리핑한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  자신의 실패를 부끄러워하지 않고 객관적(메타인지적)으로 분석한 학생의 태도를 높이 칭찬하고, 이를 세특 기록의 주요 근거로 삼는다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                투자 과정에서 겪은 실패 사례를 바탕으로 자본주의 시장 경제에서 '제한된 합리성'과 '정보의 비대칭성'이 초래하는 한계를 분석함. 자신이 내린 선택의 기회비용을 구체적으로 계산하여 발표하였으며, 이론적인 '합리적 경제인' 모델이 현실 주식 시장에서는 군중 심리와 불확실성으로 인해 달성하기 어려움을 실증적으로 설명함. 자신의 실패 원인을 메타인지적으로 성찰하는 태도가 탁월함.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 경제 Section -->
+    <section id="economics" class="section">
+      <h2 class="section-title">📊 경제 (일반선택)</h2>
+      
+      <!-- Curriculum Framework -->
+      <div class="curr-framework">
+        <div class="curr-header">🎯 교육과정 핵심 구조 (시장 경제와 거시 지표 중심)</div>
+        <div class="curr-core-idea">
+          [핵심 아이디어] 시장 가격은 수요와 공급에 의해 결정되며, 국가 경제 전체의 동향을 파악하기 위해 거시 경제 지표를 활용하고 경제 안정을 위해 다양한 정책이 요구된다.
+        </div>
+        
+        <div class="curr-elements">
+          <div class="curr-col">
+            <h4>🧠 지식·이해</h4>
+            <ul>
+              <li>수요와 공급의 원리 및 균형 가격 결정</li>
+              <li>인플레이션, 실업, 경제성장 등 거시 지표</li>
+              <li>재정 정책과 통화 정책의 차이</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>⚙️ 과정·기능</h4>
+            <ul>
+              <li>시장의 수요·공급 곡선 도식화 및 이동 예측</li>
+              <li>명목·실질 지표를 활용한 데이터 변화 추이 분석</li>
+              <li>거시 경제 안정화 정책의 파급 효과 논증</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>❤️ 가치·태도</h4>
+            <ul>
+              <li>통계와 지표를 객관적으로 해석하려는 태도</li>
+              <li>경제 정책의 딜레마(양면성)를 비판적으로 수용하는 시각</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="curr-questions">
+          <h4>💡 관련 탐구 질문 (Inquiry Questions)</h4>
+          <ol>
+            <li>주식, 채권, 원자재 등 자산의 가격은 궁극적으로 시장에서 어떻게 결정되고 변동되는가?</li>
+            <li>기준 금리와 물가상승률의 변화는 화폐의 실질 가치와 개인의 구매력에 어떤 영향을 미칠까?</li>
+            <li>물가 상승(인플레이션)과 경기 침체(실업률 상승)가 동시에 발생하는 위기 상황에서 국가 정책은 어떤 한계에 봉착하는가?</li>
+          </ol>
+        </div>
+
+        <div class="curr-standards">
+          <h4>📖 관련 국가 성취기준 전문</h4>
+          <ul>
+            <li><strong>[12경제01-01]</strong> 경제생활에서 발생하는 희소성과 기회비용의 의미를 이해하고, 합리적 선택의 필요성을 파악한다.</li>
+            <li><strong>[12경제02-01]</strong> 시장에서 가격이 결정되는 원리를 이해하고, 수요와 공급의 변동이 가격에 미치는 영향을 분석한다.</li>
+            <li><strong>[12경제03-01]</strong> 인플레이션, 실업 등 거시 경제 변수의 의미를 이해하고, 경제 안정화 정책의 필요성과 한계를 파악한다.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>💡 수업 아이디어 및 세특 예시</h3>
+        <p>미시적 의사결정(개인 투자)과 거시적 경제 흐름(인플레이션, 수요공급 변동)의 인과관계를 철저히 분석하고 실제 경제 지표와 연동시킵니다.</p>
+        
+        <p class="eval-notice">
+          💡 <strong>수업 활용 팁:</strong> 아래 제시된 단계별 <strong>'학생 수행'</strong>과 <strong>'교사 지도'</strong> 내용은 수업 설계를 돕기 위한 <strong>예시 가이드</strong>입니다. 학급의 성취 수준과 배정된 수업 시수에 맞게 단계와 내용을 유연하게 변형하여 활용하시기 바랍니다.
+        </p>
+
+        <div class="eval-container">
+          <!-- 아이디어 1 -->
+          <div class="eval-box">
+            <div class="eval-title">1. [포트폴리오 분석형] 거시지표 변동에 따른 기회비용 및 리밸런싱 보고서</div>
+            <div><span class="tag">거시지표</span><span class="tag">기회비용</span><span class="tag">실질수익률</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12경제01-01], [12경제03-01]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">금리와 물가상승률의 변동을 추적하고, 기회비용을 고려하여 명목/실질 수익률 극대화를 위한 자산 리밸런싱 전략을 수립하여 평가할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 거시지표 트래킹]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  앱 정규 12라운드 플레이 중 실시간으로 변동하는 거시 지표(물가상승률, 기준금리)를 매 라운드 종료 시 워크시트 표에 정확히 기록한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들이 단순히 주가 등락만 보지 않고, 우상단에 표시된 '금리'와 '물가' 패널을 주기적으로 체크하도록 매 라운드마다 주의를 환기시킨다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 추이 그래프 도식화]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  수집한 데이터를 바탕으로 X축(라운드), Y축(퍼센트)의 꺾은선 그래프를 그리고, 누적 물가를 차감한 자신의 '실질 수익률' 선을 겹쳐 그린다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  모눈종이나 태블릿 앱을 제공하여 축 설정을 점검해 주고, 명목 수익에서 인플레이션율을 빼는 '실질 계산 공식'을 칠판에 적어준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 리밸런싱 의사결정 복기]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  그래프 상 금리가 급등하는 구간에 자신이 주식에서 채권이나 예금으로 어떻게 포트폴리오 비중을 재조정(리밸런싱)했는지 기회비용 관점에서 분석한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생이 금리 인상 시기에 안전 자산으로 이동한 논리(주식의 기회비용 증가)를 정확히 서술했는지 개별적으로 피드백한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 현실 동향 비교 보고서 작성]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  한국은행의 실제 최근 3개년 기준금리 변동 양상과 당시 코스피 지수 추이를 조사하여, 게임 결과와 현실의 유사점 및 차이점을 보고서로 제출한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  보고서 평가 시, 금리와 자산 시장 간의 역의 상관관계를 통계 데이터로 타당하게 입증했는지 여부를 최우선 평가 기준으로 삼는다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                12라운드에 걸친 기준금리와 물가상승률 데이터를 추적하여 실질 수익률 변화의 추이를 그래프로 완벽하게 도식화함. 거시 지표의 변화 시그널을 선제적으로 읽어내고, 기회비용을 최소화하기 위해 주식에서 채권으로 포트폴리오를 리밸런싱하는 의사결정 과정이 논리적임. 특히 사후 보고서에서 최근 3년간 한국은행의 실질 기준금리 인상 사이클과 코스피 시장의 침체 국면 데이터를 찾아내어 모의 시뮬레이션 결과와 교차 검증하는 심층적인 탐구 역량을 보여줌.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 2 -->
+          <div class="eval-box">
+            <div class="eval-title">2. [뉴스 브리핑형] 시장 뉴스에 따른 수요·공급 곡선 이동 분석</div>
+            <div><span class="tag">수요와 공급</span><span class="tag">가격 결정</span><span class="tag">그래프 도식화</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12경제02-01]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">경제 뉴스가 특정 자산의 수요 및 공급 요인에 미치는 영향을 분석하고, 새로운 균형 가격 형성 원리를 그래프로 도식화하여 실제 시장 사례로 설명할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 미시적 뉴스 이벤트 수집]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  앱 플레이 중 등장하는 특정 자산과 관련된 뉴스(예: 중동 신규 유전 대규모 발견, 남미 곡물 작황 최악 등)를 3가지 이상 스크랩한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  금리 같은 거시 지표보다, 원유나 곡물 등 특정 상품의 '가격'에 직접 영향을 미칠 수 있는 미시적 뉴스를 식별하도록 힌트를 제공한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 곡선 이동 방향 판단 및 작도]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  스크랩한 뉴스가 특정 ETF의 수요 곡선을 이동시킬 요인인지, 공급 곡선을 이동시킬 요인인지 경제학적으로 판단하여 그래프를 그린다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들이 그린 활동지를 확인하며, 공급 요인(생산비, 기술, 작황 등)과 수요 요인(선호도, 소득 등)을 혼동하지 않았는지 개별 첨삭한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 새로운 균형 도출]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  곡선이 좌/우로 이동한 후 형성된 새로운 균형점(E')에서 균형 가격과 균형 거래량이 전보다 어떻게 변동하는지 인과관계를 서술한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  단순히 "가격이 오른다"가 아니라, "초과 수요 발생 → 가격 상승 압력 → 새로운 균형 도달"의 메커니즘을 명확히 쓰도록 지도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 현실 쇼크 사례 브리핑]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  과거 실제 발생했던 유사 쇼크(예: 2022년 우크라이나 전쟁으로 인한 밀 공급 곡선 좌측 이동) 기사를 첨부하고, 학급 앞에서 수요공급 그래프를 그리며 브리핑한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  발표자의 그래프 작도 정확성과, 현실의 시사 이슈를 경제학적 모형으로 치환하여 설명하는 능력을 종합적으로 평가한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                가상 경제 뉴스(원유 생산 차질, 곡물 작황 악화 등)가 자산 시장에 미치는 영향을 수요·공급 곡선의 이동으로 명확히 도식화함. 뉴스로 인한 대중의 기대 심리가 시장 균형 가격에 선반영되는 '효율적 시장 가설'의 일면을 통찰함. 나아가, 실제 발생했던 우크라이나 전쟁 발발 당시 국제 밀(Wheat) 가격의 폭등 기사와 차트를 직접 발췌하여, 외부 충격이 공급 곡선의 좌측 이동을 유발하는 과정을 학급 전체에 전문적인 수준으로 브리핑함.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 3 -->
+          <div class="eval-box">
+            <div class="eval-title">3. [정책 분석형] 스태그플레이션 위기와 경제 안정화 정책의 딜레마</div>
+            <div><span class="tag">거시경제</span><span class="tag">안정화 정책</span><span class="tag">정책 한계</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12경제03-01]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">스태그플레이션 상황에서 취할 수 있는 경제 안정화 정책을 제안하고, 현실 경제(예: 1970년대 오일쇼크)와 비교하여 그 부작용과 한계를 비판적으로 논술할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 위기 상황 가정 및 스크린샷]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  게임 후반부에 물가상승률 5% 이상, 실업률 7% 이상이 동시에 나타나는 '가상 스태그플레이션' 구간을 특정하여 캡처한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들이 해당 지표의 의미를 파악하도록 돕고, 물가 상승과 경기 침체가 동시에 나타나는 최악의 거시 경제 상태임을 설명한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 해결 정책 입안]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  이 위기를 타개하기 위해 물가를 잡을 것인지(긴축 통화정책), 경기를 부양할 것인지(확장 재정정책) 하나의 목표를 우선순위로 선택하고 논거를 세운다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  두 마리 토끼를 동시에 잡는 마법의 정책은 없음을 인지시키고, 학생 스스로 국가 경제 수장이 되어 가치 판단을 내리도록 유도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 상충관계(Trade-off) 분석]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  자신이 선택한 정책(예: 인플레이션을 잡기 위한 초고금리 정책)이 필연적으로 초래할 반대편의 부작용(예: 기업 파산, 실업률 극대화)을 경제 이론을 바탕으로 서술한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  단순한 정책 제안에 그치지 않고, 경제 정책의 '딜레마'와 '비용'을 서술하는 비판적 사고력을 중점적으로 관찰하고 피드백한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 역사적 고전 사례 비교 논술]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  1970년대 오일쇼크 당시 미국 폴 볼커 연준 의장의 정책(기준금리 20% 인상) 사례를 조사하여, 거시 경제 정책의 한계를 주제로 완성된 논술문을 작성한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  가상 시뮬레이션의 경험과 현실 역사학적 팩트가 논리적으로 잘 연결되었는지 루브릭 평가표에 기반하여 최종 채점한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                고물가와 고실업이 겹친 가상의 스태그플레이션 위기 상황에서, 중앙은행의 긴축적 통화정책과 정부의 확장적 재정정책 간의 딜레마를 심도 있게 분석함. 단순히 이론을 나열하는 데 그치지 않고, 1970년대 오일쇼크 당시 미국 연준 의장 폴 볼커의 초고금리 정책 사례를 스스로 조사하여, 물가를 잡기 위해 감수해야 했던 혹독한 경기 침체(실업)의 부작용을 보고서로 작성함. 거시 정책이 완벽할 수 없음을 이해하고 비판적 안목을 기르는 모습이 우수함.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 금융과 경제생활 Section -->
+    <section id="finance" class="section">
+      <h2 class="section-title">💰 금융과 경제생활 (융합선택)</h2>
+      
+      <!-- Curriculum Framework -->
+      <div class="curr-framework">
+        <div class="curr-header">🎯 교육과정 핵심 구조 (합리적 자산 관리와 위험 분산)</div>
+        <div class="curr-core-idea">
+          [핵심 아이디어] 금융 시장은 수익성과 위험성을 수반하며, 합리적 자산 관리를 위해서는 금융 상품의 특성을 이해하고 변동성 위험을 분산하는 포트폴리오 구성이 필수적이다.
+        </div>
+        
+        <div class="curr-elements">
+          <div class="curr-col">
+            <h4>🧠 지식·이해</h4>
+            <ul>
+              <li>예금, 채권, 펀드 등 상품별 특성(수익성, 안전성, 유동성)</li>
+              <li>생애 주기에 따른 재무 목표 수립</li>
+              <li>금융 시장의 위험(위험 프리미엄)과 변동성 개념</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>⚙️ 과정·기능</h4>
+            <ul>
+              <li>다양한 금융 상품의 수익률 및 리스크 계산</li>
+              <li>시장 정보를 활용한 개인 맞춤형 자산배분안 기획</li>
+              <li>포트폴리오 이론을 적용한 위험 분산 전략 평가</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>❤️ 가치·태도</h4>
+            <ul>
+              <li>위험을 감수하면서도 대비하려는 자율적이고 책임 있는 태도</li>
+              <li>비합리적 투자 심리(군중 심리, 패닉셀)를 경계하는 성찰적 태도</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="curr-questions">
+          <h4>💡 관련 탐구 질문 (Inquiry Questions)</h4>
+          <ol>
+            <li>수익성, 안전성, 유동성 측면에서 각각의 금융 상품(예금, 채권, 주식)은 어떻게 다를까?</li>
+            <li>디폴트(채무불이행) 위험이 큰 신흥국의 국채 이자율이 미국 국채보다 훨씬 높은 근본적 이유는 무엇일까?</li>
+            <li>예측 불가능하고 변동성이 큰 시장에서 자산 손실을 최소화하기 위한 나만의 원칙(포트폴리오 다각화 등)은 어떻게 수립할 수 있을까?</li>
+          </ol>
+        </div>
+
+        <div class="curr-standards">
+          <h4>📖 관련 국가 성취기준 전문</h4>
+          <ul>
+            <li><strong>[12금융01-01]</strong> 생애 주기에 따른 재무 설계의 필요성을 이해하고, 합리적인 금융 의사 결정 과정을 탐색한다.</li>
+            <li><strong>[12금융02-01]</strong> 저축, 투자, 신용 등 다양한 금융 상품의 특징을 비교하고, 자신의 재무 목표에 적합한 자산 관리 방안을 수립한다.</li>
+            <li><strong>[12금융03-02]</strong> 금융 시장의 변동성과 위험을 이해하고, 위험 관리 및 포트폴리오 구성의 중요성을 파악한다.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>💡 수업 아이디어 및 세특 예시</h3>
+        <p>개별 금융 상품의 특성을 파악하고, 불확실성을 통제하기 위한 실제 금융 시장의 위험 관리 기법을 모의 투자와 연계합니다.</p>
+        
+        <p class="eval-notice">
+          💡 <strong>수업 활용 팁:</strong> 아래 제시된 단계별 <strong>'학생 수행'</strong>과 <strong>'교사 지도'</strong> 내용은 수업 설계를 돕기 위한 <strong>예시 가이드</strong>입니다. 학급의 성취 수준과 배정된 수업 시수에 맞게 단계와 내용을 유연하게 변형하여 활용하시기 바랍니다.
+        </p>
+
+        <div class="eval-container">
+          <!-- 아이디어 1 -->
+          <div class="eval-box">
+            <div class="eval-title">1. [기획안 작성형] 생애주기 맞춤형 자산배분 제안서</div>
+            <div><span class="tag">금융상품 3요소</span><span class="tag">재무 설계</span><span class="tag">포트폴리오</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12금융01-01], [12금융02-01]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">다양한 금융 상품의 3요소를 비교 분석하여, 가상의 클라이언트의 생애 주기와 재무 목표에 최적화된 자산 배분 포트폴리오를 설계할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 금융 상품 3요소 진단]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  앱에 등장하는 주요 자산(정기예금, 미국 국채, 개별 주식, 원자재 ETF 등)을 수익성, 안전성, 유동성 기준으로 5점 척도 스파이더웹 차트로 그린다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  유동성의 개념(필요할 때 손해 없이 현금화할 수 있는 정도)을 게임 내 예금 중도해지 패널티와 연관 지어 명확히 짚어준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 가상 클라이언트 프로필 설정]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  20대 사회초년생(공격투자형)과 50대 은퇴예정자(안전추구형)라는 2명의 가상 고객 프로필과 재무 목표를 구체적으로 설정한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  연령대별로 남은 근로 소득 기간이 투자 위험 감수 능력(Risk Tolerance)에 미치는 영향을 발문하여 이해시킨다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 원형 차트 포트폴리오 설계]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  초기 자금 1억 원을 각 클라이언트의 성향에 맞추어 자산군별로 퍼센트(%) 비중을 나눈 맞춤형 원형 차트 포트폴리오를 설계한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  '100 минус 나이 법칙(100에서 자기 나이를 뺀 비율만큼 위험 자산에 투자)' 등 실무적인 가이드라인을 팁으로 제공해 설계의 방향을 잡아준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 기관 자료 연계 타당성 발표]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  국민연금기금 운용본부 등 실제 기관의 자산 배분 현황을 참고 자료로 제시하며, 자신의 포트폴리오 기획안이 지닌 논리적 타당성을 발표한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  국민연금공단 홈페이지의 기금 운용 비중 데이터를 찾는 방법을 시연하고, 개인의 자산 관리에 기관의 전략을 어떻게 차용했는지 집중 평가한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                가상 클라이언트의 연령(20대 vs 50대)과 위험 수용도에 따라 예금, 국채, 원유 ETF, 개별 주식의 편입 비중을 다르게 설정한 '맞춤형 자산배분 포트폴리오 제안서'를 탁월하게 작성함. 특히 각 금융상품의 3요소(수익성, 안전성, 유동성)를 수치화하여 비교표를 만들었으며, 자신의 제안서를 뒷받침하기 위해 실제 국민연금기금 운용본부의 자산군별 목표 비중 현황 자료를 인용하여 논리적 타당성과 현실성을 한층 높임.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 2 -->
+          <div class="eval-box">
+            <div class="eval-title">2. [데이터 분석형] 위험 프리미엄과 국가/기업별 채권 수익률 비교</div>
+            <div><span class="tag">위험 프리미엄</span><span class="tag">채권 투자</span><span class="tag">시장 변동성</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12금융03-02]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">미국과 신흥국 국채의 금리 차이를 비교하여, 위험 프리미엄의 개념을 실증적 데이터로 설명하고 디폴트 리스크를 평가할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 금리 데이터 추출 및 대조]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  게임 내 채권 메뉴에서 '미국 국채'와 '아르헨티나 국채'의 각 라운드별 지급 이자율(쿠폰 금리) 데이터를 워크시트에 나란히 기록한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  채권의 가격과 이자율의 반비례 관계를 간략히 짚어주고, 학생들이 두 국가의 수익률 수치 차이를 명확히 인지하도록 안내한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 위험 프리미엄 원리 도출]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  압도적인 이자율 격차가 발생하는 근본 원인을 국가 신용도와 파산 위험(디폴트) 관점에서 분석하여 '위험 프리미엄' 개념을 문장으로 정의한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  "수익률이 높다는 것은 그만큼 떼일 위험(Risk)도 크다는 보상금"이라는 핵심 개념을 설명하며, 하이리스크-하이리턴의 이면을 가르친다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 모라토리엄 현실 사례 탐구]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  현실 금융 시장에서 발생했던 아르헨티나, 러시아, 스리랑카 등의 수차례 국가 부도 사태나 국내 우량 기업 회사채 부도 기사를 태블릿으로 탐색한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생들이 탐구에 활용할 수 있도록 최근의 '레고랜드 PF 사태', 과거 '그리스 디폴트' 등 풍부하고 구체적인 키워드를 칠판에 판서해 준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 채권 위험성 평가서 제출]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  '채권 투자는 무조건 예금처럼 안전자산인가?'를 주제로, 위험 프리미엄 원리를 적용해 원금 손실 리스크를 엄중히 경고하는 에세이를 제출한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  교과서에 흔히 '채권=안전자산'이라 단순화된 오개념을 비판적으로 깨고 파산 위험을 정확히 지적했는지 루브릭으로 평가한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                게임 내 선진국 국채(미국)와 신흥국 국채(아르헨티나)의 이자율 격차 데이터를 비교 분석하여 '위험 프리미엄'의 작동 원리를 실증적으로 도출해 냄. 금융 시장에서 '하이리스크-하이리턴'이 단지 기대 수익만을 의미하는 것이 아니라 원금 손실 리스크의 전조 현상임을 정확히 파악함. 나아가 실제 역사 속 국가 디폴트 사태와 최근의 부동산 PF 회사채 위기 기사를 탐구하여 채권이 절대적 안전자산이 아님을 비판적으로 서술함.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 3 -->
+          <div class="eval-box">
+            <div class="eval-title">3. [투자 일지형] 변동성 장세에서의 투자 심리 및 위험 관리 성찰</div>
+            <div><span class="tag">행동경제학</span><span class="tag">메타인지</span><span class="tag">위험 분산</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12금융01-01], [12금융03-02]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">시장 변동성 상황에서 자신이 내린 금융 의사결정을 행동경제학적 관점에서 성찰하고, 자산 손실을 방어하기 위한 개인 차원의 위험 분산 투자 전략을 평가할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 감정 일지 (Trading Journal) 작성]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  앱 플레이 12라운드 동안, 자산이 단기적으로 10% 이상 급등락했던 특정 라운드를 꼽아 당시 자신의 심리 상태(탐욕, 불안, 포모 등)를 솔직히 기록한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  결과적인 수익보다 '그때 왜 흔들렸는지' 마음의 움직임을 가감 없이 적는 것이 이 수행평가의 핵심임을 거듭 강조한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 행동경제학적 자기 진단]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  자신이 저지른 뇌동매매(패닉셀, 추격 매수 등)의 원인을 행동경제학의 주요 개념(손실 회피 편향, 군중 심리, 확증 편향)을 접목해 객관적으로 분석한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  행동경제학의 핵심 용어 목록(학습지 형태)을 배부하여 학생들이 자신의 일지 내용을 이론적 틀에 맞추어 전문적으로 진단하도록 돕는다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 구루(Guru)의 방어 전략 조사]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  감정의 요동과 시장 불확실성을 방어하기 위해, 워렌 버핏, 레이 달리오 등 전설적인 투자 대가들이 강조하는 위험 관리 원칙(헷징, 분산)을 검색한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  검색 키워드로 '올웨더 포트폴리오', '자산 배분 60/40 룰', '달러 코스트 에버리징(적립식)' 등을 제시하여 실효성 있는 전략을 찾게 한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 평생 투자 원칙 수립 및 선언]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  자기 성찰 결과와 구루들의 방어 전략을 융합하여, 성인이 된 후 평생 적용할 '나만의 3대 자산 관리 및 위험 분산 원칙'을 수립하고 낭독한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  일회성 반성에 그치지 않고, 변동성 위험을 시스템적으로 관리하려는 태도(메타인지)를 내면화했는지 관찰하여 교과 세특에 기록한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                모의 자산 가격이 급등락하는 국면에서 자신이 느낀 포모(FOMO) 증후군과 패닉셀 등 비합리적 군중 심리를 행동경제학 관점에서 객관적으로 성찰하는 우수한 투자 일지를 작성함. 투자 수익이 마이너스를 기록한 원인을 시장 상황 탓이 아닌 본인의 심리적 오류에서 찾으려는 메타인지 능력이 뛰어남. 이를 극복하기 위해 레이 달리오의 '올웨더 포트폴리오(사계절 분산투자)' 이론을 스스로 조사하고, 향후 자신의 자산 관리 원칙으로 도입하겠다고 선언함.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 세계시민과 지리 Section -->
+    <section id="geography" class="section">
+      <h2 class="section-title">🌍 세계시민과 지리 (융합/일반선택 연계)</h2>
+      
+      <!-- Curriculum Framework -->
+      <div class="curr-framework">
+        <div class="curr-header">🎯 교육과정 핵심 구조 (상호 의존성과 글로벌 공급망)</div>
+        <div class="curr-core-idea">
+          [핵심 아이디어] 세계화로 인해 지역 경제와 환경은 긴밀하게 연결되며, 특정 지역의 자원 및 기상 변화는 글로벌 공급망을 통해 전 세계에 경제적 파급 효과를 미친다.
+        </div>
+        
+        <div class="curr-elements">
+          <div class="curr-col">
+            <h4>🧠 지식·이해</h4>
+            <ul>
+              <li>지구적 차원의 기후 및 지형 변화 패턴</li>
+              <li>에너지, 식량 자원의 편재성과 국가 간 의존성</li>
+              <li>세계화와 글로벌 생산 네트워크(공급망)의 특성</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>⚙️ 과정·기능</h4>
+            <ul>
+              <li>지역적 사건이 글로벌 경제에 미치는 영향 맵핑(Mapping)하기</li>
+              <li>기후 위기가 원자재 수급에 미치는 인과관계 분석</li>
+              <li>글로벌 공급망 재편(리쇼어링 등)에 따른 지리적 대응 전략 도출</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>❤️ 가치·태도</h4>
+            <ul>
+              <li>지역적 문제가 전 지구적 과제임을 인식하는 세계 시민 의식</li>
+              <li>상호 의존적 관계 속에서 지정학적 갈등의 평화적 해결 지향</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="curr-questions">
+          <h4>💡 관련 탐구 질문 (Inquiry Questions)</h4>
+          <ol>
+            <li>지구 반대편의 기상 이변(엘니뇨 등)이나 지정학적 갈등이 나의 주식 계좌와 식탁 물가에 어떻게 영향을 미칠까?</li>
+            <li>특정 국가(지역)에 대한 원자재 수입 의존도가 높을 때 현대 경제 시스템이 겪게 되는 위험 요소는 무엇인가?</li>
+            <li>위기에 강한 공급망(회복탄력성)을 구축하기 위해 국가와 기업은 어떠한 공간적·지리적 전략을 모색해야 할까?</li>
+          </ol>
+        </div>
+
+        <div class="curr-standards">
+          <h4>📖 관련 국가 성취기준 전문</h4>
+          <ul>
+            <li><strong>[12세지02-02]</strong> 세계 주요 지역의 자원 분포와 소비 특성을 파악하고, 이와 관련된 지정학적 갈등과 상호 의존성을 분석한다.</li>
+            <li><strong>[12세지04-01]</strong> 경제의 세계화에 따른 지역 경제의 변화와 글로벌 공급망의 형성 과정을 공간적 관점에서 이해한다.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>💡 수업 아이디어 및 세특 예시</h3>
+        <p>앱 내부의 가상 이벤트가 어떻게 지리적 공간을 넘어 전 세계로 경제적 나비효과를 일으키는지 확인하고, 현실의 글로벌 공급망 지도를 탐구합니다.</p>
+        
+        <p class="eval-notice">
+          💡 <strong>수업 활용 팁:</strong> 아래 제시된 단계별 <strong>'학생 수행'</strong>과 <strong>'교사 지도'</strong> 내용은 수업 설계를 돕기 위한 <strong>예시 가이드</strong>입니다. 학급의 성취 수준과 배정된 수업 시수에 맞게 단계와 내용을 유연하게 변형하여 활용하시기 바랍니다.
+        </p>
+
+        <div class="eval-container">
+          <!-- 아이디어 1 -->
+          <div class="eval-box">
+            <div class="eval-title">1. [시각화형] 글로벌 경제 나비효과 시스템 맵 (Causal Loop)</div>
+            <div><span class="tag">공간적 사고</span><span class="tag">상호의존성</span><span class="tag">글로벌 공급망</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12세지04-01]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">특정 지역의 환경적·지정학적 이벤트가 글로벌 공급망과 환율을 매개로 타 지역에 연쇄적으로 파급되는 과정을 공간적 관점에서 도식화할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 촉발 이벤트 선정]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  게임 내 발생하는 특정 글로벌 경제 뉴스(예: 중동 지역의 군사적 갈등, 남미의 기록적 가뭄 등)를 하나 선정하여 기록한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  지정학적, 지리적 원인이 명확히 내포된 이벤트(자원, 기후, 분쟁 등)를 선택하도록 조언하여 과제의 방향성을 잡아준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 나비효과 인과 맵핑]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  선정한 이벤트가 [원자재 가격 폭등] → [글로벌 환율 변동] → [수입 기업 영업이익 감소] → [국내 주가 폭락]으로 퍼져나가는 파급 경로를 전지 크기의 시스템 맵(Causal Loop)으로 그린다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  단선적 A→B 사고를 넘어, 환율과 기업 이익, 소비재 물가 상승 등이 거미줄처럼 얽히는 상호의존적 시스템 구조를 그리도록 시각화를 유도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 초크포인트(Chokepoint) 사례 증명]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  과거 '수에즈 운하 에버기븐호 좌초 사건' 등 해상 물류 요충지의 마비가 전 세계 물가에 미친 실제 피해 기사를 스크랩하여 맵 옆에 부착한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  말라카 해협, 호르무즈 해협 등 경제 지리에서 다루는 주요 '해상 초크포인트' 자료를 제공하여 학생들의 탐구 깊이를 심화시킨다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 갤러리 워크 전시 및 상호 평가]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  완성된 지리적 시스템 맵을 교실 벽면에 전시하고, 다른 모둠의 작품에 코멘트 포스트잇을 붙이며 최종 성찰 일지를 작성한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  타 모둠의 맵을 통해 다양한 지리적 변수가 글로벌 경제에 미치는 양상을 입체적으로 학습할 수 있도록 상호 평가 활동을 주도한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                가상의 중동 지정학적 갈등 뉴스가 국제 원자재 가격과 환율 폭등을 거쳐, 최종적으로 원자재 수입 의존도가 높은 국내 기업의 주가 폭락으로 이어지는 연쇄 과정을 인과관계 지도(시스템 맵)로 탁월하게 시각화함. 경제 변수 간의 관계를 단선적이 아닌 공간적 상호의존성 측면에서 입체적으로 이해함. 특히 사후 활동으로 과거 '수에즈 운하 선박 좌초 사건'의 실제 경제 피해액 자료를 조사하여 자신의 시스템 맵과 완벽하게 매칭시켜 현실 설명력을 입증함.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 2 -->
+          <div class="eval-box">
+            <div class="eval-title">2. [주제 탐구형] 기후 위기와 원자재(곡물/에너지) 가격의 상관관계 분석</div>
+            <div><span class="tag">자원 분포</span><span class="tag">기후 변화</span><span class="tag">지정학적 리스크</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12세지02-02]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">기후 위기가 세계 주요 자원의 생산에 미치는 타격을 분석하고, 현실의 기후 변화 사례를 바탕으로 국제 식량/에너지 안보 위기 기제를 설명할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 기후 이벤트와 ETF 가격 연동 관찰]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  앱 플레이 과정에서 '원유 ETF'나 '곡물 ETF'의 가격이 단기간에 폭등하는 라운드를 포착하고, 이를 촉발한 기후/환경 뉴스를 메모한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  자연 환경적 요인(폭우, 가뭄 등)이 어떻게 인간의 경제 자산 지표로 즉각 변환되는지 그 연결 고리에 주목하도록 지도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 지리적 원인 매칭]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  자원의 지리적 편재성 개념을 바탕으로, 특정 기후 벨트(예: 우크라이나 흑토지대, 브라질 커피 농장)의 기후 변화가 해당 자원 가격에 독점적 영향을 미치는 원리를 탐구한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  교과서의 '세계의 농업 지역' 또는 '에너지 자원 분포도' 지도 자료를 제공하여 학생들의 공간적 매칭 코칭을 돕는다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 애그플레이션(Agflation) 현실 스크랩]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  최근 슈퍼 엘니뇨/라니냐 현상으로 인도의 쌀 수출 통제 등 곡창지대가 입은 타격과 '애그플레이션' 현상을 다룬 신문 기사를 발췌한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  단순한 날씨 뉴스가 아니라, '수출 통제', '보호주의', '애그플레이션' 등 전문 경제/정치 용어가 포함된 심층 심층 기사를 선별하도록 유도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 식량/에너지 안보 논술]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  기후 변화가 단순한 환경 문제를 넘어 국가의 존립을 위협하는 '식량 및 에너지 안보의 무기화'로 직결되는 거시적 구조를 논리정연하게 작성한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  학생의 글에서 환경 문제를 넘어선 '지정학적 무기화' 관점의 비판적 인식이 잘 드러났는지를 루브릭 핵심 지표로 평가한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                시뮬레이션 내 곡물 및 에너지 ETF 가격의 폭등 양상을 관찰한 후, 자원의 편재성과 기후 위기를 연결하여 분석하는 통찰력을 보여줌. 최근 발생한 슈퍼 엘니뇨 현상이 세계 주요 곡창지대(인도, 팜파스 등)의 수확량 감소와 수출 통제로 이어져 전 세계적인 애그플레이션(농산물 가격 인플레이션)을 유발했다는 실제 뉴스 기사를 심층 조사함. 지리적 기후 변화가 인류의 식량 및 에너지 안보에 미치는 위협을 거시적인 관점에서 논리정연하게 작성함.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 3 -->
+          <div class="eval-box">
+            <div class="eval-title">3. [대안 제시형] 공급망 위기에 대응하는 국가·기업의 지리적 전략 수립</div>
+            <div><span class="tag">전략 수립</span><span class="tag">공급망 다변화</span><span class="tag">경제 세계화</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12세지02-02], [12세지04-01]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">글로벌 경제 체제에서 자원 수입 의존도가 높은 기업의 공급망 위기를 분석하고, 국가 및 기업 차원의 실효성 있는 지리적 대응 전략을 모색할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 취약 기업 재무제표 진단]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  앱 내 기업 정보 탭에서 '원자재 수입 의존도'가 가장 높은 기업을 선택하고, 글로벌 환율 폭등 시 겪을 수입 단가 상승의 잠재적 타격을 수치로 가늠해 본다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  왜 자원이 부족한 국가의 제조업이 환율 방어와 글로벌 공급망 쇼크에 구조적으로 취약할 수밖에 없는지 기본 메커니즘을 칠판에 판서해 준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 글로벌 공급망 재편 동향 탐색]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  반도체, 배터리 등 현실 첨단 산업 분야에서 글로벌 대기업들이 지정학적 리스크를 피하기 위해 취하고 있는 최신 '공급망 재편' 뉴스 동향을 검색한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  '오프쇼어링' 시대에서 '프렌드쇼어링', '니어쇼어링', '리쇼어링' 시대로 전환되는 최신 경제 지리 용어의 뜻과 사례를 간략히 짚어준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 기업 CEO 입장의 지리적 전략 기획]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  자신이 해당 취약 기업의 CEO라 가정하고, 단일 국가 수입 의존을 탈피하기 위한 수입선 다변화, 동맹국 내 밸류체인 구축 등 공간적 다변화 기획서를 작성한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  공장 이전이나 공급망 다변화에는 막대한 초기 비용이 수반된다는 점을 상기시켜 맹목적인 이상론에 치우치지 않는 기획을 유도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 모의 주주 총회 롤플레잉]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  기획서를 바탕으로 모둠 내에서 '주주 총회'를 열어, 막대한 전환 비용이 들더라도 지정학적 생존을 위해 공급망 다변화가 필수적임을 주주(모둠원)에게 설득한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  비용 상승을 우려하는 주주들의 반박에 맞서, 장기적 리스크 분산의 타당성을 공간 지리적 안목으로 방어해 내는 논리력을 종합 평가한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                수입 원자재 의존도가 높은 가상 기업을 설정하고, 글로벌 공급망 마비와 환율 급등 시 발생할 치명적인 영업이익 훼손 위기를 진단함. 이를 극복하기 위한 대안으로 최근 실제 산업계의 화두인 '프렌드쇼어링(가치관을 공유하는 국가끼리 공급망을 구축하는 것)' 및 '자원 수입선 다변화' 전략 기사들을 발췌하여 적용함. 이론적 세계화의 종언 현상을 이해하고, 지리적 공간을 활용한 실무적인 기업 리스크 분산 전략을 수준 높게 기획함.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 사회문제 탐구 Section -->
+    <section id="social" class="section">
+      <h2 class="section-title">🔍 사회문제 탐구 (융합선택)</h2>
+      
+      <!-- Curriculum Framework -->
+      <div class="curr-framework">
+        <div class="curr-header">🎯 교육과정 핵심 구조 (경제적 양극화와 사회적 대응)</div>
+        <div class="curr-core-idea">
+          [핵심 아이디어] 경제 지표의 변동과 자본 시장의 특성은 부의 양극화를 심화시킬 수 있으며, 이를 완화하기 위해서는 다각적인 정책 평가와 합리적인 조세 및 복지 논의가 필요하다.
+        </div>
+        
+        <div class="curr-elements">
+          <div class="curr-col">
+            <h4>🧠 지식·이해</h4>
+            <ul>
+              <li>현대 사회 불평등 양상(자산, 소득 양극화)과 구조적 원인</li>
+              <li>불평등을 설명하는 제반 이론(기능론, 갈등론 등)</li>
+              <li>불평등 완화를 위한 사회 보장 제도와 조세 정책</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>⚙️ 과정·기능</h4>
+            <ul>
+              <li>자산 양극화 관련 통계 데이터 수집 및 분석</li>
+              <li>다양한 이해관계자의 입장에서 정책 파급 효과 논증</li>
+              <li>약자 보호와 부의 재분배를 위한 실효성 있는 대안 제도 기획</li>
+            </ul>
+          </div>
+          <div class="curr-col">
+            <h4>❤️ 가치·태도</h4>
+            <ul>
+              <li>사회적 약자가 직면한 구조적 불이익에 깊이 공감하는 자세</li>
+              <li>정의로운 사회 구현을 위해 제도를 개선하려는 참여적 태도</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="curr-questions">
+          <h4>💡 관련 탐구 질문 (Inquiry Questions)</h4>
+          <ol>
+            <li>자산 가격(부동산, 주식 등)의 급등은 왜 근로 소득자들에게 상대적 박탈감을 안기며 사회적 불평등을 증폭시키는가?</li>
+            <li>스태그플레이션 위기 속에서 가장 큰 타격을 받는 계층은 누구이며, 그 근본적인 이유는 무엇인가?</li>
+            <li>부유층의 잉여 자본에 세금을 걷어 취약 계층을 지원할 때, '근로 의욕 훼손'이라는 반론을 넘어설 수 있는 바람직한 재분배 제도는 무엇일까?</li>
+          </ol>
+        </div>
+
+        <div class="curr-standards">
+          <h4>📖 관련 국가 성취기준 전문</h4>
+          <ul>
+            <li><strong>[12사문02-01]</strong> 불평등을 설명하는 다양한 관점을 이해하고, 경제적·사회적 불평등 현상의 원인과 양상을 분석한다.</li>
+            <li><strong>[12사문02-03]</strong> 사회적 약자를 보호하고 불평등을 완화하기 위한 다양한 사회 정책의 내용과 한계를 평가한다.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>💡 수업 아이디어 및 세특 예시</h3>
+        <p>게임 속 극단적 경제 지표를 하나의 현실 사회 문제로 치환하여, 자산 격차와 불평등을 해결하기 위한 실효성 있는 논의를 진행합니다.</p>
+        
+        <p class="eval-notice">
+          💡 <strong>수업 활용 팁:</strong> 아래 제시된 단계별 <strong>'학생 수행'</strong>과 <strong>'교사 지도'</strong> 내용은 수업 설계를 돕기 위한 <strong>예시 가이드</strong>입니다. 학급의 성취 수준과 배정된 수업 시수에 맞게 단계와 내용을 유연하게 변형하여 활용하시기 바랍니다.
+        </p>
+
+        <div class="eval-container">
+          <!-- 아이디어 1 -->
+          <div class="eval-box">
+            <div class="eval-title">1. [역할놀이/토론형] 가상 경제 위기 극복 모의 정책 위원회</div>
+            <div><span class="tag">정책 평가</span><span class="tag">이해관계자</span><span class="tag">협동학습</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12사문02-03]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">스태그플레이션이 초래한 계층 간 갈등 양상을 이해하고, 다양한 이해관계자의 입장에서 불평등 완화를 위한 거시 정책의 타당성과 한계를 토론하여 실제 정책 사례로 논증할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 모둠 역할 배정 및 몰입]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  4인 1조 모둠에서 정부(재정), 중앙은행(통화), 전국 경제인 연합(기업 대표), 무주택자(노동자 대표) 역할을 제비뽑기로 배정받는다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  본격적인 토론 전, 각 집단이 경제 위기에서 최우선으로 지키고자 하는 핵심 이익이 무엇인지 사전 브리핑 자료를 제공하여 역할 몰입도를 높인다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 계층별 위기 발제]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  게임 내 고물가 상황을 토론 안건으로 삼아, 현재의 지표가 자신의 계층(예: 자산 없는 노동자)에 얼마나 치명적인지 2분간 수치를 들어 발제한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  고물가가 인플레이션 세금(Inflation tax)처럼 작용하여 왜 고소득자보다 저소득층의 실질 소득을 더 갉아먹는지 통계적 근거를 찾도록 코칭한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 난상 토론 및 타협안 모색]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  금리 대폭 인상, 저소득층 현금 보조금 지급, 법인세 인하 등 각자의 입장에서 서로 상충되는 정책을 두고 15분간 모둠 내 찬반 토론을 벌여 타협안을 만든다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  토론이 단순한 감정 싸움이나 목소리 크기로 변질되지 않도록, 정책 도입 시 예상되는 파급 효과(물가 재자극 등)를 논박의 근거로 삼게 중재한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 합의문 작성 및 개인 성찰]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  첨예한 갈등 끝에 도출된 '위기 극복 합의문'을 제출하고, 현실 역사(예: 팬데믹 지원금 논란)와 연계하여 정책 결정 과정의 어려움을 개인 보고서로 쓴다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  100% 모두를 만족시키는 완벽한 정책은 없음을 깨닫고, 불평등 완화라는 숭고한 목표 이면의 딜레마를 성찰한 부분에 가장 높은 평가 점수를 준다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                가상의 스태그플레이션 위기 극복을 위한 모의 토론에서 '무주택 노동자' 대표 역할을 맡아 물가 상승과 주거비 급등이 빈곤층에 미치는 구조적 타격을 통계를 활용해 설득력 있게 발제함. 경기 부양을 위한 현금성 복지 정책이 역으로 인플레이션을 심화시킬 수 있다는 상대방(중앙은행 역)의 논리를 과거 재난지원금 관련 실제 뉴스 기사를 들어 방어하고 절충안을 모색함. 거시 경제 정책이 이해관계자에 따라 다르게 작용함을 정확히 인지하는 태도가 훌륭함.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 2 -->
+          <div class="eval-box">
+            <div class="eval-title">2. [현상 분석형] '자산 가격 급등'이 야기하는 계층 간 부의 양극화 분석</div>
+            <div><span class="tag">불평등 양상</span><span class="tag">자산 격차</span><span class="tag">구조적 원인</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12사문02-01]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">자산 가격의 비정상적 급등 현상을 확인하고, 자본 소득과 근로 소득의 격차가 초래하는 부의 불평등을 갈등론적 시각에서 실제 통계 지표와 연계하여 분석할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 자본/근로 소득 격차 수치화]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  12라운드 동안 폭등한 '부동산 지수'의 변동률과, 일반적인 가상의 '임금 상승률(연 3% 고정치)' 데이터를 엑셀에 입력하여 갭(Gap)을 시각적으로 확인한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  노동의 가치가 자산의 폭등을 따라가지 못하는 상황을 수치로 직시하게 하여 문제의 심각성을 느끼도록 안내한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 극단적 비교 시나리오 도출]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  게임 시작 시 초기 자본을 부동산에 올인한 A학생과 저축만 유지한 B학생의 12라운드 최종 자산 격차를 복리 계산으로 도출해 본다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  시간이 지날수록 초기 자본의 크기가 격차를 돌이킬 수 없이 벌려놓는 현상(스노우볼 효과)을 구조적 불평등 관점에서 짚어준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 피케티 이론 및 통계 연계]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  부의 불평등을 다룬 '지니계수(Gini index)'나 토마스 피케티의 '자본 수익률(r) > 경제 성장률(g)' 이론을 설명하는 칼럼을 찾아 읽고 요약한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  피케티의 (r>g) 방정식의 의미를 알기 쉽게 판서하고, 현상 분석의 사회학적 뼈대를 단단히 세워준다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 갈등론적 분석 에세이 작성]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  게임 데이터와 이론을 접목하여, 자본주의 사회에서 순수 노동 소득보다 자산의 대물림과 증식이 양극화를 심화시키는 구조임을 갈등론적 시각으로 서술한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  단순한 개인의 노력 부족 탓(기능론적 접근)이 아닌, 시스템이 낳는 구조적 모순을 비판적으로 파고들었는지 루브릭으로 평가한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                게임 내 자산(부동산, 주식 등)의 가파른 가격 상승률 데이터를 바탕으로, 근로 소득과 자본 소득의 불균형이 초래하는 자산 양극화의 폭발성을 수치화하여 증명함. 나아가 토마스 피케티의 '자본 수익률이 경제 성장률을 상회한다(r>g)'는 이론적 뼈대와 한국의 실제 지니계수 변화 기사를 교차 분석하여, 자본주의 구조 내에서 필연적으로 발생하는 사회적 불평등 현상을 갈등론적 시각에서 매우 깊이 있고 예리하게 서술함.
+              </div>
+            </div>
+          </div>
+
+          <!-- 아이디어 3 -->
+          <div class="eval-box">
+            <div class="eval-title">3. [정책 입안형] 사회적 약자를 위한 가상 조세 및 복지 제도 기획</div>
+            <div><span class="tag">복지 제도</span><span class="tag">부의 재분배</span><span class="tag">대안 모색</span></div>
+            <div class="eval-standards-box">
+              <p><strong>[관련 성취기준]</strong> [12사문02-01], [12사문02-03]</p>
+              <p><strong>[수행 성취기준]</strong><br>
+                <span class="std-text">경제적 약자를 구제하기 위한 합리적인 부의 재분배 정책을 기획하고, 현실 복지 정책 논쟁 사례를 바탕으로 그 타당성과 파급 효과를 논증할 수 있다.</span>
+              </p>
+            </div>
+            
+            <div class="step-container">
+              <div class="step-item">
+                <div class="step-header">[1단계: 약자 규정 및 원인 진단]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  12라운드 게임 종료 후 전체 랭킹 하위 20%를 '경제적 약자'로 묶고, 이들이 파산하거나 뒤처진 이유(초기 자본 부족, 정보 비대칭 등 구조적 한계)를 진단한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  수익률 하위권 학생들의 실패를 개인의 무능으로 조롱하지 않도록 분위기를 통제하고, 사회 구조적 관점(기울어진 운동장)에서 연민을 갖게 지도한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[2단계: 가상 조세 및 재분배 법안 설계]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  상위 10%의 고수익자에게 '가상 자산 보유세(또는 금투세)'를 부과하여, 이를 하위 20%에게 재기 자금(기본 소득)으로 지급하는 복지 법안(누진 세율 체계)을 설계한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  세율이 턱없이 높으면 부자들이 해외로 자본을 빼돌리는 등 조세 저항이 따름을 알려주고, 합리적인 수치의 누진세율을 고민하도록 피드백한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[3단계: 현실 보수/진보 논쟁 조사]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  현실 정치권의 종부세나 금투세 반대 논리(예: "과도한 세금이 근로/투자 의욕을 꺾고 자본 유출을 초래한다")를 기사 사설에서 스크랩해 '예상 반론' 코너에 넣는다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  자신의 기획안을 무조건 정당화하기보다, 반대 진영의 논리 역시 타당성이 있음을 객관적으로 수용하고 포용하는 학술적 태도를 요구한다.
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-header">[4단계: 재반박 및 최종 제안서 제출]</div>
+                <div class="step-actor student">
+                  <span class="icon-label">👩‍🎓 학생 수행:</span> 
+                  "그럼에도 불구하고 해당 제도가 취약 계층의 소비 진작을 유도해 전체 경제에 선순환 승수 효과를 낸다"는 '재반박 논리'를 덧붙여 정책 제안서를 제출한다.
+                </div>
+                <div class="step-actor teacher">
+                  <span class="icon-label">👨‍🏫 교사 지도:</span> 
+                  단순한 온정주의를 넘어, 부의 재분배가 자본주의 경제 유지 자체를 위해 필수적이라는 논증적 사고력을 보여준 학생에게 최고 평가를 부여한다.
+                </div>
+              </div>
+            </div>
+
+            <div class="seteuk-box">
+              <div class="seteuk-title">📝 교과 세특 기재 예시</div>
+              <div class="seteuk-content">
+                모의 투자 활동 후 자산 증식에 실패한 계층이 겪는 구조적 불이익에 깊이 공감하며, 상위 계층의 잉여 자본에 세금을 부과하여 하위 계층에게 재분배하는 가상의 촘촘한 복지 제도를 기획함. 이 과정에서 현실 정치권에서 벌어지는 '금융투자소득세' 및 '기본소득' 도입 찬반 논쟁 관련 신문 사설들을 체계적으로 스크랩함. 부의 재분배 정책이 자칫 근로 의욕 저하를 가져올 수 있다는 우려를 인정하면서도, 하위 계층의 소비 진작을 통한 선순환적 경제 효과로 논리적 재반박을 해내는 사고력이 빛남.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <p>참고: 성취기준은 <strong>2022 개정 사회과 교육과정 (교육부 고시 제2022-33호)</strong> 문서를 기준으로 반영하였습니다.<br>본 자료는 에듀테크 앱을 활용한 학생 참여형·과정 중심 수업 및 수행평가 설계를 지원하기 위해 제작되었습니다.</p>
+        
+        <div class="footer-info">
+          <p style="font-weight: 800; color: var(--primary); font-size: 1.15rem; margin-bottom: 8px;">👨‍🏫 제작자: 지리과 어떤 교사</p>
+          <p style="color: var(--text-main); font-weight: 500;">📧 문의사항: 28182818@naver.com</p>
+          <p style="color: var(--secondary); font-weight: 800; margin-top: 10px;">✨ 새로운 아이디어가 있으시면 연락주세요! 꼭 반영하여 선생님의 이름을 더하고 싶습니다.</p>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    function showSection(sectionId) {
+      // Hide all sections
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(sec => sec.classList.remove('active'));
+      
+      // Remove active from links
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => link.classList.remove('active'));
+      
+      // Show selected section
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+      
+      // Highlight nav link
+      const activeLink = Array.from(navLinks).find(link => link.getAttribute('onclick').includes(sectionId));
+      if (activeLink) activeLink.classList.add('active');
+    }
+  </script>
+</body>
+</html>
